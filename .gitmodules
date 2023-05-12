@@ -1,0 +1,9 @@
+[submodule "cvrp/CVRPController"]
+	path = cvrp/CVRPController
+	url = https://github.com/laser-ufpb/CVRPController.git
+[submodule "irp/dimacs-irp-verifier"]
+	path = irp/dimacs-irp-verifier
+	url = https://github.com/sbeyer/dimacs-irp-verifier.git
+[submodule "carp/HGS-CARP"]
+	path = carp/HGS-CARP
+	url = https://github.com/vidalt/HGS-CARP.git
