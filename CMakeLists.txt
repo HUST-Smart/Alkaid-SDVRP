@@ -1,60 +1,67 @@
-cmake_minimum_required(VERSION 3.14)
-project(AlkaidSD)
+cmake_minimum_required(VERSION 3.14...3.22)
 
-set(CMAKE_CXX_STANDARD 20)
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -march=native")
-  if (PGO STREQUAL "generate")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fprofile-instr-generate=${CMAKE_SOURCE_DIR}/pgo-clang/dimacs-sd-%p.profraw")
-  endif ()
-  if (PGO STREQUAL "use")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fprofile-instr-use=${CMAKE_SOURCE_DIR}/pgo-clang/dimacs-sd.profdata")
-  endif ()
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto")
-  set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -fuse-ld=lld")
-elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -march=native")
-  if (PGO STREQUAL "generate")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fprofile-generate=${CMAKE_SOURCE_DIR}/pgo-gcc/dimacs-sd-%q{PROFILE_FILE}")
-  endif ()
-  if (PGO STREQUAL "use")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fprofile-use=${CMAKE_SOURCE_DIR}/pgo-gcc/dimacs-sd")
-  endif ()
+# ---- Project ----
+
+# Note: update this to your new project's name and version
+project(
+  AlkaidSD
+  VERSION 1.0
+  LANGUAGES CXX
+)
+
+# ---- Include guards ----
+
+if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
+  message(
+    FATAL_ERROR
+      "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there."
+  )
 endif()
 
-include(cmake/cli11.cmake)
-include(cmake/json.cmake)
-include(cmake/mimalloc.cmake)
+# ---- Add dependencies via CPM ----
+# see https://github.com/TheLartians/CPM.cmake for more info
 
-include_directories(src)
+include(cmake/CPM.cmake)
 
-add_library(
-  alkaid-sd
-  src/algorithm/construction.cc
-  src/algorithm/operator/cross.cc
-  src/algorithm/operator/exchange.cc
-  src/algorithm/operator/or_opt.cc
-  src/algorithm/operator/relocate.cc
-  src/algorithm/operator/repair.cc
-  src/algorithm/operator/sd_swap_one_one.cc
-  src/algorithm/operator/sd_swap_star.cc
-  src/algorithm/operator/sd_swap_two_one.cc
-  src/algorithm/operator/split_reinsertion.cc
-  src/algorithm/operator/swap_star.cc
-  src/algorithm/operator/swap.cc
-  src/algorithm/ruin_method.cc
-  src/algorithm/solver.cc
-  src/algorithm/sorter.cc
-  src/config/config.cc
-  src/distance_matrix.cc
-  src/model/route_context.cc
-  src/problem.cc
-  src/util/solution_utils.cc
-  src/util/submit.cc
-  src/util/timer.cc)
+# PackageProject.cmake will be used to make our target installable
+CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.11.1")
 
-target_link_libraries(alkaid-sd nlohmann_json::nlohmann_json)
+# ---- Add source files ----
 
-add_executable(alkaid-sd-main src/main.cc)
+# Note: globbing sources is considered bad practice as CMake's generators may not detect new files
+# automatically. Keep that in mind when changing files, or explicitly mention them here.
+file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
+file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp")
 
-target_link_libraries(alkaid-sd-main PRIVATE alkaid-sd CLI11::CLI11 mimalloc-static)
+# ---- Create library ----
+
+# Note: for header-only libraries change all PUBLIC flags to INTERFACE and create an interface
+# target: add_library(${PROJECT_NAME} INTERFACE)
+add_library(${PROJECT_NAME} ${headers} ${sources})
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
+
+# being a cross-platform target, we enforce standards conformance on MSVC
+target_compile_options(${PROJECT_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->")
+
+target_include_directories(
+  ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+                         $<INSTALL_INTERFACE:include/${PROJECT_NAME}-${PROJECT_VERSION}>
+)
+
+# ---- Create an installable target ----
+# this allows users to install and find the library via `find_package()`.
+
+# the location where the project's version header will be placed should match the project's regular
+# header paths
+string(TOLOWER ${PROJECT_NAME}/version.h VERSION_HEADER_LOCATION)
+
+packageProject(
+  NAME ${PROJECT_NAME}
+  VERSION ${PROJECT_VERSION}
+  NAMESPACE ${PROJECT_NAME}
+  BINARY_DIR ${PROJECT_BINARY_DIR}
+  INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include
+  INCLUDE_DESTINATION include/${PROJECT_NAME}-${PROJECT_VERSION}
+  VERSION_HEADER "${VERSION_HEADER_LOCATION}"
+  COMPATIBILITY SameMajorVersion
+)
