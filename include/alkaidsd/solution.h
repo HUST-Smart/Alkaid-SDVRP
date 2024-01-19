@@ -230,6 +230,30 @@ namespace alkaidsd {
       return os;
     }
 
+    /**
+     * @brief Print the solution in json format.
+     *
+     * @param os The output stream.
+     * @param solution The solution to be printed.
+     * @return The output stream.
+     */
+    std::ostream& PrintJson(std::ostream& os) {
+      os << "[";
+      for (Node node_index : NodeIndices()) {
+        if (!Predecessor(node_index)) {
+          os << "[{ \"customer\": 0, \"quantity\": 0 }";
+          while (node_index) {
+            Node customer = Customer(node_index);
+            os << ", { \"customer\": " << customer << ", \"quantity\": " << Load(node_index) << " }";
+            node_index = Successor(node_index);
+          }
+          os << ",{ \"customer\": 0, \"quantity\": 0 }],\n";
+        }
+      }
+      os.seekp(-2, std::ios::cur);
+      return os << "]";
+    }
+
   private:
     struct NodeData {
       Node successor;

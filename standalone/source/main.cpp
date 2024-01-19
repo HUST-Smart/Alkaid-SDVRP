@@ -74,7 +74,12 @@ int main(int argc, char **argv) {
   auto solution = alkaidsd::Solve(config, problem);
   distance_matrix_optimizer.Restore(solution);
   std::ofstream ofs(output);
-  ofs << solution;
+  std::string json_ext(".json");
+  if (output.substr(output.size() - json_ext.size()) == json_ext) {
+    solution.PrintJson(ofs);
+  } else {
+    ofs << solution;
+  }
   return 0;
 }
 
@@ -150,8 +155,8 @@ std::function<std::unique_ptr<alkaidsd::acceptance_rule::AcceptanceRule>()> Pars
 
 std::unique_ptr<alkaidsd::ruin_method::RuinMethod> ParseRuinMethod(
     const std::string &type, const std::vector<std::string> &args) {
-  auto map = ParseFromArgs(args);
   if (type == "SISRs") {
+    auto map = ParseFromArgs(args);
     auto average_customers = static_cast<int>(map.at("average_customers"));
     auto max_length = static_cast<int>(map.at("max_length"));
     auto split_rate = map.at("split_rate");

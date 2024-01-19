@@ -1,5 +1,6 @@
 #include <alkaidsd/solver.h>
 
+#include <algorithm>
 #include <chrono>
 #include <limits>
 #include <numeric>

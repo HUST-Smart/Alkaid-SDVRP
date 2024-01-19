@@ -2,6 +2,12 @@
 
 An Efficient Iterated Local Search Heuristic for the Split Delivery Vehicle Routing Problem
 
+## Dependencies
+
+The following third-party libraries are used in this project, and an Internet connection is required at configure-time to download them.
+- [CPM](https://github.com/cpm-cmake/CPM.cmake)
+- [CLI11](https://github.com/CLIUtils/CLI11) (for building the standalone executable only)
+
 ## Usage
 
 ### Build and run the standalone target
