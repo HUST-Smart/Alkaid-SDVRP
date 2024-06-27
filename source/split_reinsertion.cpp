@@ -14,7 +14,7 @@ namespace alkaidsd {
   };
 
   void SplitReinsertion(const Problem &problem, Node customer, int demand, double blink_rate,
-                        Solution &solution, RouteContext &context, Random &random) {
+                        AlkaidSolution &solution, RouteContext &context, Random &random) {
     auto func = [&](Node predecessor, Node successor, Node customer) {
       Node pre_customer = solution.Customer(predecessor);
       Node suc_customer = solution.Customer(successor);

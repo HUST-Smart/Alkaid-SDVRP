@@ -19,8 +19,8 @@ namespace alkaidsd {
     void AddRoute(Node head, Node tail, int load) {
       routes_.emplace_back(RouteData{head, tail, load});
     }
-    void CalcRouteContext(const Solution &solution);
-    void UpdateRouteContext(const Solution &solution, Node route_index, Node predecessor);
+    void CalcRouteContext(const AlkaidSolution &solution);
+    void UpdateRouteContext(const AlkaidSolution &solution, Node route_index, Node predecessor);
     void MoveRouteContext(Node dest_route_index, Node src_route_index);
 
   private:

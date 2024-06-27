@@ -24,7 +24,7 @@ namespace alkaidsd {
     }
   };
 
-  template <class Func> auto CalcBestInsertion(const Solution &solution, const Func &func,
+  template <class Func> auto CalcBestInsertion(const AlkaidSolution &solution, const Func &func,
                                                const RouteContext &context, Node route_index,
                                                Node customer, Random &random) {
     Node head = context.Head(route_index);

@@ -28,10 +28,10 @@ namespace alkaidsd {
      *
      * @param solution The solution to be restored.
      */
-    void Restore(Solution& solution) const;
+    void Restore(AlkaidSolution& solution) const;
 
   private:
-    void Restore(Solution& solution, Node i, Node j) const;
+    void Restore(AlkaidSolution& solution, Node i, Node j) const;
 
     std::vector<std::vector<int>> original_;
     std::vector<std::vector<Node>> previous_node_indices_;

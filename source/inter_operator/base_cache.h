@@ -25,7 +25,7 @@ namespace alkaidsd::inter_operator {
 
   template <class T> class InterRouteCache : public Cache {
   public:
-    void Reset([[maybe_unused]] const Solution &solution, const RouteContext &context) override {
+    void Reset([[maybe_unused]] const AlkaidSolution &solution, const RouteContext &context) override {
       max_index_ = context.NumRoutes();
       matrix_.resize(context.NumRoutes());
       route_index_mappings_.resize(context.NumRoutes());
@@ -72,7 +72,7 @@ namespace alkaidsd::inter_operator {
       route_index_mappings_[dest_route_index] = route_index_mappings_[src_route_index];
     }
 
-    void Save([[maybe_unused]] const Solution &solution,
+    void Save([[maybe_unused]] const AlkaidSolution &solution,
               [[maybe_unused]] const RouteContext &context) override {}
 
     BaseCache<T> &Get(Node route_a, Node route_b) {

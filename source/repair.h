@@ -6,5 +6,5 @@
 #include "route_context.h"
 
 namespace alkaidsd {
-  void Repair(const Problem &problem, Node route_index, Solution &solution, RouteContext &context);
+  void Repair(const Problem &problem, Node route_index, AlkaidSolution &solution, RouteContext &context);
 }  // namespace alkaidsd

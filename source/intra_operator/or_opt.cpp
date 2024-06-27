@@ -12,7 +12,7 @@ namespace alkaidsd::intra_operator {
     Node successor;
   };
 
-  void DoOrOpt(const OrOptMove &move, Node route_index, Solution &solution, RouteContext &context) {
+  void DoOrOpt(const OrOptMove &move, Node route_index, AlkaidSolution &solution, RouteContext &context) {
     Node predecessor_head = solution.Predecessor(move.head);
     Node successor_tail = solution.Successor(move.tail);
     solution.SetSuccessor(0, context.Head(route_index));
@@ -26,7 +26,7 @@ namespace alkaidsd::intra_operator {
     context.SetHead(route_index, solution.Successor(0));
   }
 
-  template <int num> void OrOptInner(const Problem &problem, const Solution &solution, Node head,
+  template <int num> void OrOptInner(const Problem &problem, const AlkaidSolution &solution, Node head,
                                      Node tail, Node predecessor, Node successor,
                                      OrOptMove &best_move, Delta<int> &best_delta, Random &random) {
     Node predecessor_head = solution.Predecessor(head);
@@ -58,7 +58,7 @@ namespace alkaidsd::intra_operator {
 
   template <int num>
   bool intra_operator::OrOpt<num>::operator()(const Problem &problem, Node route_index,
-                                              Solution &solution, RouteContext &context,
+                                              AlkaidSolution &solution, RouteContext &context,
                                               Random &random) const {
     OrOptMove best_move{};
     Delta<int> best_delta{};

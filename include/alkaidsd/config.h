@@ -32,14 +32,14 @@ namespace alkaidsd {
      * @param solution The updated solution.
      * @param objective The objective value of the updated solution.
      */
-    virtual void OnUpdated(const Solution &solution, int objective) = 0;
+    virtual void OnUpdated(const AlkaidSolution &solution, int objective) = 0;
 
     /**
      * @brief Called when the optimization process ends.
      * @param solution The final solution.
      * @param objective The objective value of the final solution.
      */
-    virtual void OnEnd(const Solution &solution, int objective) = 0;
+    virtual void OnEnd(const AlkaidSolution &solution, int objective) = 0;
   };
 
   /**

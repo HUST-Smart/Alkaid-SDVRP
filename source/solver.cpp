@@ -13,8 +13,8 @@
 #include "utils.h"
 
 namespace alkaidsd {
-  void IntraRouteSearch(const Problem &problem, const Config &config, Node route_index,
-                        Solution &solution, RouteContext &context, Random &random) {
+  void IntraRouteSearch(const Problem &problem, const AlkaidConfig &config, Node route_index,
+                        AlkaidSolution &solution, RouteContext &context, Random &random) {
     Repair(problem, route_index, solution, context);
     std::vector<Node> intra_neighborhoods(config.intra_operators.size());
     std::iota(intra_neighborhoods.begin(), intra_neighborhoods.end(), 0);
@@ -34,8 +34,8 @@ namespace alkaidsd {
     }
   }
 
-  void RandomizedVariableNeighborhoodDescent(const Problem &problem, const Config &config,
-                                             Solution &solution, RouteContext &context,
+  void RandomizedVariableNeighborhoodDescent(const Problem &problem, const AlkaidConfig &config,
+                                             AlkaidSolution &solution, RouteContext &context,
                                              Random &random, CacheMap &cache_map) {
     cache_map.Reset(solution, context);
     while (true) {
@@ -86,7 +86,7 @@ namespace alkaidsd {
     cache_map.Save(solution, context);
   }
 
-  void Perturb(const Problem &problem, const Config &config, Solution &solution,
+  void Perturb(const Problem &problem, const AlkaidConfig &config, AlkaidSolution &solution,
                RouteContext &context, Random &random) {
     context.CalcRouteContext(solution);
     std::vector<Node> customers = config.ruin_method->Ruin(problem, solution, context, random);
@@ -120,14 +120,14 @@ namespace alkaidsd {
         .count();
   }
 
-  Solution Solve(const Config &config, const Problem &problem) {
+  AlkaidSolution AlkaidSolver::Solve(const AlkaidConfig &config, const Problem &problem) {
     if (config.listener != nullptr) {
       config.listener->OnStart();
     }
     Random random(config.random_seed);
     RouteContext context;
     CacheMap cache_map;
-    Solution best_solution;
+    AlkaidSolution best_solution;
     int best_objective = std::numeric_limits<int>::max();
     auto start_time = std::chrono::high_resolution_clock::now();
     const int kMaxStagnation = std::min(5000, static_cast<int>(problem.num_customers)

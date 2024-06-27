@@ -10,7 +10,7 @@ namespace alkaidsd::inter_operator {
     Node right_x, right_y;
   };
 
-  void SegmentInsertion(Solution &solution, RouteContext &context, Node left, Node right,
+  void SegmentInsertion(AlkaidSolution &solution, RouteContext &context, Node left, Node right,
                         Node predecessor, Node successor, Node route_index, int direction) {
     if (direction) {
       solution.ReversedLink(left, right, predecessor, successor);
@@ -24,7 +24,7 @@ namespace alkaidsd::inter_operator {
   }
 
   template <int num_x, int num_y>
-  void DoSwap(SwapMove<num_x, num_y> &move, Solution &solution, RouteContext &context) {
+  void DoSwap(SwapMove<num_x, num_y> &move, AlkaidSolution &solution, RouteContext &context) {
     if (move.direction_y == -1) {
       Node predecessor = solution.Predecessor(move.left_x);
       Node successor = solution.Successor(move.right_x);
@@ -47,7 +47,7 @@ namespace alkaidsd::inter_operator {
   }
 
   template <int num_x, int num_y>
-  void UpdateShift(const Problem &problem, const Solution &solution, Node route_x, Node route_y,
+  void UpdateShift(const Problem &problem, const AlkaidSolution &solution, Node route_x, Node route_y,
                    Node left, Node right, Node predecessor, Node successor, Node base_x,
                    BaseCache<SwapMove<num_x, num_y>> &cache, Random &random) {
     Node customer_left = solution.Customer(left);
@@ -67,7 +67,7 @@ namespace alkaidsd::inter_operator {
   }
 
   template <int num_x, int num_y>
-  void UpdateSwap(const Problem &problem, const Solution &solution, Node route_x, Node route_y,
+  void UpdateSwap(const Problem &problem, const AlkaidSolution &solution, Node route_x, Node route_y,
                   Node left_x, Node right_x, Node left_y, Node right_y, int base_x,
                   BaseCache<SwapMove<num_x, num_y>> &cache, Random &random) {
     Node customer_left_x = solution.Customer(left_x);
@@ -97,7 +97,7 @@ namespace alkaidsd::inter_operator {
   }
 
   template <int num_x, int num_y>
-  void SwapInner(const Problem &problem, Solution &solution, RouteContext &context, Node route_x,
+  void SwapInner(const Problem &problem, AlkaidSolution &solution, RouteContext &context, Node route_x,
                  Node route_y, BaseCache<SwapMove<num_x, num_y>> &cache, Random &random) {
     Node left_x = context.Head(route_x);
     int load_x = solution.Load(left_x);
@@ -158,7 +158,7 @@ namespace alkaidsd::inter_operator {
   }
 
   template <int num_x, int num_y> std::vector<Node> inter_operator::Swap<num_x, num_y>::operator()(
-      const Problem &problem, Solution &solution, RouteContext &context, Random &random,
+      const Problem &problem, AlkaidSolution &solution, RouteContext &context, Random &random,
       CacheMap &cache_map) const {
     auto &caches = cache_map.Get<InterRouteCache<SwapMove<num_x, num_y>>>(solution, context);
     SwapMove<num_x, num_y> best_move{};

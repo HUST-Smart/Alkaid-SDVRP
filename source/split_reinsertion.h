@@ -8,6 +8,6 @@
 
 namespace alkaidsd {
   void SplitReinsertion(const Problem &problem, Node customer, int demand, double blink_rate,
-                        Solution &solution, RouteContext &context, Random &random);
+                        AlkaidSolution &solution, RouteContext &context, Random &random);
 
 }  // namespace alkaidsd

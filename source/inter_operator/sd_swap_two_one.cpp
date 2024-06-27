@@ -13,7 +13,7 @@ namespace alkaidsd::inter_operator {
     bool direction_ij, direction_ijk;
   };
 
-  void DoSdSwapTwoOne(const SdSwapTwoOneMove &move, Solution &solution, RouteContext &context) {
+  void DoSdSwapTwoOne(const SdSwapTwoOneMove &move, AlkaidSolution &solution, RouteContext &context) {
     Node predecessor_k = solution.Predecessor(move.node_k);
     Node successor_k = solution.Successor(move.node_k);
     {
@@ -87,7 +87,7 @@ namespace alkaidsd::inter_operator {
     }
   }
 
-  void SdSwapTwoOne0(const Problem &problem, const Solution &solution,
+  void SdSwapTwoOne0(const Problem &problem, const AlkaidSolution &solution,
                      [[maybe_unused]] const RouteContext &context, Node route_ij, Node route_k,
                      Node node_i, Node node_j, Node node_k, Node predecessor_ij, Node successor_ij,
                      int split_load, int base_delta, BaseCache<SdSwapTwoOneMove> &cache,
@@ -125,7 +125,7 @@ namespace alkaidsd::inter_operator {
     }
   }
 
-  void SdSwapTwoOne1(const Problem &problem, const Solution &solution,
+  void SdSwapTwoOne1(const Problem &problem, const AlkaidSolution &solution,
                      [[maybe_unused]] const RouteContext &context, Node route_ij, Node route_k,
                      Node node_i, Node node_j, Node node_k, Node predecessor_ij, Node successor_ij,
                      int split_load, int base_delta, BaseCache<SdSwapTwoOneMove> &cache,
@@ -166,7 +166,7 @@ namespace alkaidsd::inter_operator {
     }
   }
 
-  void SdSwapTwoOneInner(const Problem &problem, const Solution &solution,
+  void SdSwapTwoOneInner(const Problem &problem, const AlkaidSolution &solution,
                          const RouteContext &context, Node route_ij, Node route_k,
                          BaseCache<SdSwapTwoOneMove> &cache, Random &random) {
     Node node_i = context.Head(route_ij);
@@ -208,7 +208,7 @@ namespace alkaidsd::inter_operator {
   }
 
   std::vector<Node> inter_operator::SdSwapTwoOne::operator()(const Problem &problem,
-                                                             Solution &solution,
+                                                             AlkaidSolution &solution,
                                                              RouteContext &context, Random &random,
                                                              CacheMap &cache_map) const {
     auto &caches = cache_map.Get<InterRouteCache<SdSwapTwoOneMove>>(solution, context);

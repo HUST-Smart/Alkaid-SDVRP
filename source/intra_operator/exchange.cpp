@@ -9,7 +9,7 @@ namespace alkaidsd::intra_operator {
     Node node_b;
   };
 
-  void DoExchange(const ExchangeMove &move, Node route_index, Solution &solution,
+  void DoExchange(const ExchangeMove &move, Node route_index, AlkaidSolution &solution,
                   RouteContext &context) {
     Node predecessor_a = solution.Predecessor(move.node_a);
     Node successor_a = solution.Successor(move.node_a);
@@ -25,7 +25,7 @@ namespace alkaidsd::intra_operator {
     context.UpdateRouteContext(solution, route_index, predecessor_a);
   }
 
-  void ExchangeInner(const Problem &problem, const Solution &solution, Node node_a, Node node_b,
+  void ExchangeInner(const Problem &problem, const AlkaidSolution &solution, Node node_a, Node node_b,
                      ExchangeMove &best_move, Delta<int> &best_delta, Random &random) {
     Node predecessor_a = solution.Predecessor(node_a);
     Node successor_a = solution.Successor(node_a);
@@ -46,7 +46,7 @@ namespace alkaidsd::intra_operator {
   }
 
   bool intra_operator::Exchange::operator()(const Problem &problem, Node route_index,
-                                            Solution &solution, RouteContext &context,
+                                            AlkaidSolution &solution, RouteContext &context,
                                             Random &random) const {
     ExchangeMove best_move{};
     Delta<int> best_delta{};

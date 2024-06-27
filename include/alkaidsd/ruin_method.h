@@ -36,7 +36,7 @@ namespace alkaidsd::ruin_method {
      * @param random The random number generator.
      * @return A vector of nodes that have been removed from the solution.
      */
-    virtual std::vector<Node> Ruin(const Problem &problem, Solution &solution,
+    virtual std::vector<Node> Ruin(const Problem &problem, AlkaidSolution &solution,
                                    RouteContext &context, Random &random)
         = 0;
   };
@@ -57,7 +57,7 @@ namespace alkaidsd::ruin_method {
      */
     explicit RandomRuin(std::vector<int> num_perturb_customers);
 
-    std::vector<Node> Ruin(const Problem &problem, Solution &solution, RouteContext &context,
+    std::vector<Node> Ruin(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
                            Random &random) override;
 
   private:
@@ -85,12 +85,12 @@ namespace alkaidsd::ruin_method {
     SisrsRuin(int average_customers, int max_length, double split_rate,
               double preserved_probability);
 
-    std::vector<Node> Ruin(const Problem &problem, Solution &solution, RouteContext &context,
+    std::vector<Node> Ruin(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
                            Random &random) override;
 
   private:
-    static Node GetRouteHead(Solution &solution, Node node_index, int &position);
-    static void GetRoute(const Solution &solution, Node head, std::vector<Node> &route);
+    static Node GetRouteHead(AlkaidSolution &solution, Node node_index, int &position);
+    static void GetRoute(const AlkaidSolution &solution, Node head, std::vector<Node> &route);
     int average_customers_;
     int max_length_;
     double split_rate_;

@@ -15,7 +15,7 @@ namespace alkaidsd {
 
   using CandidateList = std::vector<std::pair<int, int>>;
 
-  int AddRoute(CandidateList &candidate_list, Random &random, Solution &solution,
+  int AddRoute(CandidateList &candidate_list, Random &random, AlkaidSolution &solution,
                RouteContext &context) {
     int position = random.NextInt(0, static_cast<int>(candidate_list.size()) - 1);
     auto [customer, demand] = candidate_list[position];
@@ -28,7 +28,7 @@ namespace alkaidsd {
 
   template <class Func> void SequentialInsertion(const Problem &problem, const Func &func,
                                                  CandidateList &candidate_list, Random &random,
-                                                 Solution &solution, RouteContext &context) {
+                                                 AlkaidSolution &solution, RouteContext &context) {
     InsertionWithCost<float> best_insertion{};
     std::vector<bool> is_full(context.NumRoutes(), false);
     while (!candidate_list.empty()) {
@@ -74,7 +74,7 @@ namespace alkaidsd {
 
   template <class Func> void ParallelInsertion(const Problem &problem, const Func &func,
                                                CandidateList &candidate_list, Random &random,
-                                               Solution &solution, RouteContext &context) {
+                                               AlkaidSolution &solution, RouteContext &context) {
     std::vector<std::vector<InsertionWithCost<float>>> best_insertions(candidate_list.size());
     for (int i = 0; i < static_cast<int>(candidate_list.size()); ++i) {
       for (Node j = 0; j < context.NumRoutes(); ++j) {
@@ -136,7 +136,7 @@ namespace alkaidsd {
 
   template <class Func> void InsertCandidates(const Problem &problem, const Func &func,
                                               CandidateList &candidate_list, Random &random,
-                                              Solution &solution, RouteContext &context) {
+                                              AlkaidSolution &solution, RouteContext &context) {
     int strategy = random.NextInt(0, 1);
     if (strategy == kSis) {
       SequentialInsertion(problem, func, candidate_list, random, solution, context);
@@ -145,7 +145,7 @@ namespace alkaidsd {
     }
   }
 
-  Solution Construct(const Problem &problem, Random &random) {
+  AlkaidSolution Construct(const Problem &problem, Random &random) {
     CandidateList candidate_list;
     Node num_fleets = CalcFleetLowerBound(problem);
     for (Node i = 1; i < problem.num_customers; ++i) {
@@ -156,7 +156,7 @@ namespace alkaidsd {
         demand -= split_demand;
       }
     }
-    Solution solution;
+    AlkaidSolution solution;
     RouteContext context;
     for (Node i = 0; i < num_fleets && !candidate_list.empty(); ++i) {
       AddRoute(candidate_list, random, solution, context);

@@ -9,7 +9,7 @@ namespace alkaidsd::inter_operator {
     Node left_x, left_y;
   };
 
-  void DoCross(const CrossMove &move, Solution &solution, RouteContext &context) {
+  void DoCross(const CrossMove &move, AlkaidSolution &solution, RouteContext &context) {
     Node right_x = move.left_x ? solution.Successor(move.left_x) : context.Head(move.route_x);
     Node right_y = move.left_y ? solution.Successor(move.left_y) : context.Head(move.route_y);
     if (!move.reversed) {
@@ -41,7 +41,7 @@ namespace alkaidsd::inter_operator {
     }
   }
 
-  void CrossInner(const Problem &problem, const Solution &solution, const RouteContext &context,
+  void CrossInner(const Problem &problem, const AlkaidSolution &solution, const RouteContext &context,
                   Node route_x, Node route_y, BaseCache<CrossMove> &cache, Random &random) {
     Node left_x = 0;
     do {
@@ -79,7 +79,7 @@ namespace alkaidsd::inter_operator {
     } while (left_x);
   }
 
-  std::vector<Node> inter_operator::Cross::operator()(const Problem &problem, Solution &solution,
+  std::vector<Node> inter_operator::Cross::operator()(const Problem &problem, AlkaidSolution &solution,
                                                       RouteContext &context, Random &random,
                                                       CacheMap &cache_map) const {
     auto &caches = cache_map.Get<InterRouteCache<CrossMove>>(solution, context);

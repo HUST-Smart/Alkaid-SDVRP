@@ -7,16 +7,30 @@
 
 namespace alkaidsd {
   /**
-   * @brief The Solution class represents a solution to a problem.
+   * @brief The solution representation to a problem.
    */
   class Solution {
   public:
     /**
-     * @brief Default constructor for the Solution class.
+     * @brief Calculate the objective value of the solution.
+     *
+     * @param problem The problem instance.
+     * @return The objective value.
+     */
+    virtual int CalcObjective(const Problem& problem) const = 0;
+  };
+
+  /**
+   * @brief The AlkaidSolution class represents a solution to a problem.
+   */
+  class AlkaidSolution : public Solution {
+  public:
+    /**
+     * @brief Default constructor for the AlkaidSolution class.
      *
      * Initializes the solution with only a depot node.
      */
-    Solution() { node_data_.push_back({}); }
+    AlkaidSolution() { node_data_.push_back({}); }
 
     /**
      * @brief Get the predecessor node of a given node.
@@ -173,7 +187,7 @@ namespace alkaidsd {
      * @param problem The problem instance.
      * @return The objective value.
      */
-    int CalcObjective(const Problem& problem) const {
+    virtual int CalcObjective(const Problem& problem) const override {
       int objective = 0;
       for (Node node_index : NodeIndices()) {
         Node predecessor = Predecessor(node_index);
@@ -214,7 +228,7 @@ namespace alkaidsd {
      * @param solution The solution to be printed.
      * @return The output stream.
      */
-    friend std::ostream& operator<<(std::ostream& os, const Solution& solution) {
+    friend std::ostream& operator<<(std::ostream& os, const AlkaidSolution& solution) {
       Node num_routes = 0;
       for (Node node_index : solution.NodeIndices()) {
         if (!solution.Predecessor(node_index)) {
@@ -244,7 +258,8 @@ namespace alkaidsd {
           os << "[{ \"customer\": 0, \"quantity\": 0 }";
           while (node_index) {
             Node customer = Customer(node_index);
-            os << ", { \"customer\": " << customer << ", \"quantity\": " << Load(node_index) << " }";
+            os << ", { \"customer\": " << customer << ", \"quantity\": " << Load(node_index)
+               << " }";
             node_index = Successor(node_index);
           }
           os << ",{ \"customer\": 0, \"quantity\": 0 }],\n";

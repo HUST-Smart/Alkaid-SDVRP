@@ -13,7 +13,7 @@ namespace alkaidsd::inter_operator {
     Node node_y, predecessor_y, successor_y;
   };
 
-  void DoSwapStar(SwapStarMove &move, Solution &solution, RouteContext &context) {
+  void DoSwapStar(SwapStarMove &move, AlkaidSolution &solution, RouteContext &context) {
     Node predecessor_x = solution.Predecessor(move.node_x);
     Node successor_x = solution.Successor(move.node_x);
     Node predecessor_y = solution.Predecessor(move.node_y);
@@ -32,7 +32,7 @@ namespace alkaidsd::inter_operator {
     }
   }
 
-  void SwapStarInner(const Problem &problem, const Solution &solution, const RouteContext &context,
+  void SwapStarInner(const Problem &problem, const AlkaidSolution &solution, const RouteContext &context,
                      Node route_x, Node route_y, BaseCache<SwapStarMove> &cache,
                      StarCaches &star_caches, Random &random) {
     star_caches.Preprocess(problem, solution, context, route_x, random);
@@ -80,7 +80,7 @@ namespace alkaidsd::inter_operator {
     }
   }
 
-  std::vector<Node> inter_operator::SwapStar::operator()(const Problem &problem, Solution &solution,
+  std::vector<Node> inter_operator::SwapStar::operator()(const Problem &problem, AlkaidSolution &solution,
                                                          RouteContext &context, Random &random,
                                                          CacheMap &cache_map) const {
     auto &caches = cache_map.Get<InterRouteCache<SwapStarMove>>(solution, context);

@@ -30,7 +30,7 @@ namespace alkaidsd::intra_operator {
      * @param random The random number generator.
      * @return True if the operator successfully modifies the solution, false otherwise.
      */
-    virtual bool operator()(const Problem &problem, Node route_index, Solution &solution,
+    virtual bool operator()(const Problem &problem, Node route_index, AlkaidSolution &solution,
                             RouteContext &context, Random &random) const = 0;
   };
 
@@ -41,7 +41,7 @@ namespace alkaidsd::intra_operator {
    */
   class Exchange : public IntraOperator {
   public:
-    bool operator()(const Problem &problem, Node route_index, Solution &solution,
+    bool operator()(const Problem &problem, Node route_index, AlkaidSolution &solution,
                     RouteContext &context, Random &random) const override;
   };
 
@@ -52,7 +52,7 @@ namespace alkaidsd::intra_operator {
    */
   template <int num> class OrOpt : public IntraOperator {
   public:
-    bool operator()(const Problem &problem, Node route_index, Solution &solution,
+    bool operator()(const Problem &problem, Node route_index, AlkaidSolution &solution,
                     RouteContext &context, Random &random) const override;
   };
 }  // namespace alkaidsd::intra_operator

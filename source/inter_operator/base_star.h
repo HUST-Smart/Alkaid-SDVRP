@@ -63,7 +63,7 @@ namespace alkaidsd::inter_operator {
 
   class StarCaches : public Cache {
   public:
-    void Reset(const Solution &solution, const RouteContext &context) override {
+    void Reset(const AlkaidSolution &solution, const RouteContext &context) override {
       caches_.resize(context.NumRoutes());
       for (Node route_index = 0;
            static_cast<size_t>(route_index) < std::min(routes_.size(), caches_.size());
@@ -93,7 +93,7 @@ namespace alkaidsd::inter_operator {
     void MoveRoute(Node dest_route_index, Node src_route_index) override {
       caches_[dest_route_index].swap(caches_[src_route_index]);
     }
-    void Preprocess(const Problem &problem, const Solution &solution, const RouteContext &context,
+    void Preprocess(const Problem &problem, const AlkaidSolution &solution, const RouteContext &context,
                     Node route, Random &random) {
       auto &&insertions = caches_[route];
       if (!insertions.empty()) {
@@ -122,7 +122,7 @@ namespace alkaidsd::inter_operator {
         successor = solution.Successor(successor);
       }
     }
-    void Save(const Solution &solution, const RouteContext &context) override {
+    void Save(const AlkaidSolution &solution, const RouteContext &context) override {
       routes_.resize(context.NumRoutes());
       for (Node route_index = 0; static_cast<size_t>(route_index) < routes_.size(); ++route_index) {
         auto &route = routes_[route_index];
@@ -141,7 +141,7 @@ namespace alkaidsd::inter_operator {
     std::vector<std::vector<Node>> routes_;
   };
 
-  inline int CalcDelta(const Problem &problem, const Solution &solution, Node node_index,
+  inline int CalcDelta(const Problem &problem, const AlkaidSolution &solution, Node node_index,
                        Node predecessor, Node successor) {
     return problem.distance_matrix[solution.Customer(node_index)][solution.Customer(predecessor)]
            + problem.distance_matrix[solution.Customer(node_index)][solution.Customer(successor)]

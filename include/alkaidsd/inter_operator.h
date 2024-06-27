@@ -33,7 +33,7 @@ namespace alkaidsd::inter_operator {
      * @return A vector of route indices representing the modified routes. Empty if the operator
      * fails to optimize the solution.
      */
-    virtual std::vector<Node> operator()(const Problem &problem, Solution &solution,
+    virtual std::vector<Node> operator()(const Problem &problem, AlkaidSolution &solution,
                                          RouteContext &context, Random &random,
                                          CacheMap &cache_map) const = 0;
   };
@@ -46,7 +46,7 @@ namespace alkaidsd::inter_operator {
    */
   template <int num_x, int num_y> class Swap : public InterOperator {
   public:
-    std::vector<Node> operator()(const Problem &problem, Solution &solution, RouteContext &context,
+    std::vector<Node> operator()(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
                                  Random &random, CacheMap &cache_map) const override;
   };
 
@@ -56,7 +56,7 @@ namespace alkaidsd::inter_operator {
    */
   class Relocate : public InterOperator {
   public:
-    std::vector<Node> operator()(const Problem &problem, Solution &solution, RouteContext &context,
+    std::vector<Node> operator()(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
                                  Random &random, CacheMap &cache_map) const override;
   };
 
@@ -66,7 +66,7 @@ namespace alkaidsd::inter_operator {
    */
   class SwapStar : public InterOperator {
   public:
-    std::vector<Node> operator()(const Problem &problem, Solution &solution, RouteContext &context,
+    std::vector<Node> operator()(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
                                  Random &random, CacheMap &cache_map) const override;
   };
 
@@ -76,7 +76,7 @@ namespace alkaidsd::inter_operator {
    */
   class Cross : public InterOperator {
   public:
-    std::vector<Node> operator()(const Problem &problem, Solution &solution, RouteContext &context,
+    std::vector<Node> operator()(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
                                  Random &random, CacheMap &cache_map) const override;
   };
 
@@ -86,7 +86,7 @@ namespace alkaidsd::inter_operator {
    */
   class SdSwapStar : public InterOperator {
   public:
-    std::vector<Node> operator()(const Problem &problem, Solution &solution, RouteContext &context,
+    std::vector<Node> operator()(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
                                  Random &random, CacheMap &cache_map) const override;
   };
 
@@ -97,7 +97,7 @@ namespace alkaidsd::inter_operator {
    */
   class SdSwapOneOne : public InterOperator {
   public:
-    std::vector<Node> operator()(const Problem &problem, Solution &solution, RouteContext &context,
+    std::vector<Node> operator()(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
                                  Random &random, CacheMap &cache_map) const override;
   };
 
@@ -108,7 +108,7 @@ namespace alkaidsd::inter_operator {
    */
   class SdSwapTwoOne : public InterOperator {
   public:
-    std::vector<Node> operator()(const Problem &problem, Solution &solution, RouteContext &context,
+    std::vector<Node> operator()(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
                                  Random &random, CacheMap &cache_map) const override;
   };
 }  // namespace alkaidsd::inter_operator

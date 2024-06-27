@@ -20,7 +20,7 @@ namespace alkaidsd {
     }
   }
 
-  void DistanceMatrixOptimizer::Restore(Solution &solution, Node i, Node j) const {
+  void DistanceMatrixOptimizer::Restore(AlkaidSolution &solution, Node i, Node j) const {
     Node customer = previous_node_indices_[solution.Customer(i)][solution.Customer(j)];
     if (customer != 0) {
       Node k = solution.Insert(customer, 0, i, j);
@@ -29,7 +29,7 @@ namespace alkaidsd {
     }
   }
 
-  void DistanceMatrixOptimizer::Restore(Solution &solution) const {
+  void DistanceMatrixOptimizer::Restore(AlkaidSolution &solution) const {
     std::vector<Node> heads;
     for (Node node_index : solution.NodeIndices()) {
       if (!solution.Predecessor(node_index)) {

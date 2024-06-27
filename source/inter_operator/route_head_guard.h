@@ -6,10 +6,10 @@
 
 namespace alkaidsd {
   struct RouteHeadGuard {
-    Solution &solution;
+    AlkaidSolution &solution;
     RouteContext &context;
     Node route_index;
-    RouteHeadGuard(Solution &solution, RouteContext &context, Node route_index)
+    RouteHeadGuard(AlkaidSolution &solution, RouteContext &context, Node route_index)
         : solution(solution), context(context), route_index(route_index) {
       solution.SetSuccessor(0, context.Head(route_index));
     }

@@ -1,7 +1,7 @@
 #include "route_context.h"
 
 namespace alkaidsd {
-  void RouteContext::CalcRouteContext(const Solution &solution) {
+  void RouteContext::CalcRouteContext(const AlkaidSolution &solution) {
     routes_.clear();
     for (Node node_index : solution.NodeIndices()) {
       if (solution.Predecessor(node_index) == 0) {
@@ -14,7 +14,7 @@ namespace alkaidsd {
     }
   }
 
-  void RouteContext::UpdateRouteContext(const Solution &solution, Node route_index,
+  void RouteContext::UpdateRouteContext(const AlkaidSolution &solution, Node route_index,
                                         Node predecessor) {
     pre_loads_.resize(solution.MaxNodeIndex() + 1);
     int load = pre_loads_[predecessor];

@@ -10,7 +10,7 @@ namespace alkaidsd::inter_operator {
     Node node_x, predecessor_x, successor_x;
   };
 
-  void DoRelocate(RelocateMove &move, Solution &solution, RouteContext &context) {
+  void DoRelocate(RelocateMove &move, AlkaidSolution &solution, RouteContext &context) {
     Node predecessor_x = solution.Predecessor(move.node_x);
     Node successor_x = solution.Successor(move.node_x);
     {
@@ -24,7 +24,7 @@ namespace alkaidsd::inter_operator {
     }
   }
 
-  void RelocateInner(const Problem &problem, const Solution &solution, const RouteContext &context,
+  void RelocateInner(const Problem &problem, const AlkaidSolution &solution, const RouteContext &context,
                      Node route_x, Node route_y, BaseCache<RelocateMove> &cache,
                      StarCaches &star_caches, Random &random) {
     star_caches.Preprocess(problem, solution, context, route_y, random);
@@ -44,7 +44,7 @@ namespace alkaidsd::inter_operator {
     }
   }
 
-  std::vector<Node> inter_operator::Relocate::operator()(const Problem &problem, Solution &solution,
+  std::vector<Node> inter_operator::Relocate::operator()(const Problem &problem, AlkaidSolution &solution,
                                                          RouteContext &context, Random &random,
                                                          CacheMap &cache_map) const {
     auto &caches = cache_map.Get<InterRouteCache<RelocateMove>>(solution, context);

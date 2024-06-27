@@ -4,7 +4,7 @@
 
 namespace alkaidsd {
   void MergeAdjacentSameCustomers([[maybe_unused]] const Problem &problem, Node route_index,
-                                  Solution &solution, RouteContext &context) {
+                                  AlkaidSolution &solution, RouteContext &context) {
     Node node_index = context.Head(route_index);
     while (true) {
       Node successor = solution.Successor(node_index);
@@ -20,7 +20,7 @@ namespace alkaidsd {
     }
   }
 
-  int CalcRemovalDelta(const Problem &problem, const Solution &solution, Node node_index) {
+  int CalcRemovalDelta(const Problem &problem, const AlkaidSolution &solution, Node node_index) {
     Node predecessor = solution.Predecessor(node_index);
     Node successor = solution.Successor(node_index);
     return problem.distance_matrix[solution.Customer(predecessor)][solution.Customer(successor)]
@@ -28,7 +28,7 @@ namespace alkaidsd {
            - problem.distance_matrix[solution.Customer(node_index)][solution.Customer(successor)];
   }
 
-  void Repair(const Problem &problem, Node route_index, Solution &solution, RouteContext &context) {
+  void Repair(const Problem &problem, Node route_index, AlkaidSolution &solution, RouteContext &context) {
     if (!context.Head(route_index)) {
       return;
     }

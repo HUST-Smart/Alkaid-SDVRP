@@ -13,7 +13,7 @@ namespace alkaidsd::inter_operator {
     int split_load;
   };
 
-  void DoSdSwapOneOne(const SdSwapOneOneMove &move, Solution &solution, RouteContext &context) {
+  void DoSdSwapOneOne(const SdSwapOneOneMove &move, AlkaidSolution &solution, RouteContext &context) {
     Node predecessor_y = solution.Predecessor(move.node_y);
     Node successor_y = solution.Successor(move.node_y);
     {
@@ -30,7 +30,7 @@ namespace alkaidsd::inter_operator {
     }
   }
 
-  void SdSwapOneOneInner(const Problem &problem, const Solution &solution,
+  void SdSwapOneOneInner(const Problem &problem, const AlkaidSolution &solution,
                          [[maybe_unused]] const RouteContext &context, bool swapped, Node route_x,
                          Node route_y, Node node_x, Node node_y, int split_load,
                          BaseCache<SdSwapOneOneMove> &cache, Random &random) {
@@ -61,7 +61,7 @@ namespace alkaidsd::inter_operator {
     }
   }
 
-  void SdSwapOneOneInner(const Problem &problem, const Solution &solution,
+  void SdSwapOneOneInner(const Problem &problem, const AlkaidSolution &solution,
                          const RouteContext &context, Node route_x, Node route_y,
                          BaseCache<SdSwapOneOneMove> &cache, Random &random) {
     for (Node node_x = context.Head(route_x); node_x; node_x = solution.Successor(node_x)) {
@@ -80,7 +80,7 @@ namespace alkaidsd::inter_operator {
   }
 
   std::vector<Node> inter_operator::SdSwapOneOne::operator()(const Problem &problem,
-                                                             Solution &solution,
+                                                             AlkaidSolution &solution,
                                                              RouteContext &context, Random &random,
                                                              CacheMap &cache_map) const {
     auto &caches = cache_map.Get<InterRouteCache<SdSwapOneOneMove>>(solution, context);

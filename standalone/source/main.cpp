@@ -22,12 +22,12 @@ std::map<std::string, double> ParseFromArgs(const std::vector<std::string> &args
 class SimpleListener : public alkaidsd::Listener {
 public:
   void OnStart() override { start_time_ = std::chrono::system_clock::now(); }
-  void OnUpdated([[maybe_unused]] const alkaidsd::Solution &solution, int objective) override {
+  void OnUpdated([[maybe_unused]] const alkaidsd::AlkaidSolution &solution, int objective) override {
     auto elapsed_time = std::chrono::duration_cast<std::chrono::duration<double>>(
         std::chrono::system_clock::now() - start_time_);
     std::cout << "Update at " << elapsed_time.count() << "s: " << objective << std::endl;
   }
-  void OnEnd([[maybe_unused]] const alkaidsd::Solution &solution, int objective) override {
+  void OnEnd([[maybe_unused]] const alkaidsd::AlkaidSolution &solution, int objective) override {
     auto elapsed_time = std::chrono::duration_cast<std::chrono::duration<double>>(
         std::chrono::system_clock::now() - start_time_);
     std::cout << "End at " << elapsed_time.count() << "s: " << objective << std::endl;
@@ -40,7 +40,7 @@ private:
 int main(int argc, char **argv) {
   CLI::App app;
   std::string problem_path;
-  alkaidsd::Config config;
+  alkaidsd::AlkaidConfig config;
   InputFormat input_format;
   app.add_option("--input", problem_path, "SDVRP problem instance file path")
       ->required()
@@ -79,7 +79,8 @@ int main(int argc, char **argv) {
   config.listener = std::make_unique<SimpleListener>();
   auto problem = ReadProblemFromFile(problem_path, input_format);
   auto distance_matrix_optimizer = alkaidsd::DistanceMatrixOptimizer(problem.distance_matrix);
-  auto solution = alkaidsd::Solve(config, problem);
+  alkaidsd::AlkaidSolver solver;
+  auto solution = solver.Solve(config, problem);
   distance_matrix_optimizer.Restore(solution);
   std::ofstream ofs(output);
   std::string json_ext(".json");

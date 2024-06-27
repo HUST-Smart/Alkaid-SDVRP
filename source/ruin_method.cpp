@@ -12,7 +12,7 @@ namespace alkaidsd::ruin_method {
   RandomRuin::RandomRuin(std::vector<int> num_perturb_customers)
       : num_perturb_customers_(std::move(num_perturb_customers)) {}
 
-  std::vector<Node> RandomRuin::Ruin(const Problem &problem, [[maybe_unused]] Solution &solution,
+  std::vector<Node> RandomRuin::Ruin(const Problem &problem, [[maybe_unused]] AlkaidSolution &solution,
                                      [[maybe_unused]] RouteContext &context, Random &random) {
     int num_perturb = num_perturb_customers_[random.NextInt(
         0, static_cast<int>(num_perturb_customers_.size()) - 1)];
@@ -30,7 +30,7 @@ namespace alkaidsd::ruin_method {
         split_rate_(split_rate),
         preserved_probability_(preserved_probability) {}
 
-  std::vector<Node> SisrsRuin::Ruin(const Problem &problem, Solution &solution,
+  std::vector<Node> SisrsRuin::Ruin(const Problem &problem, AlkaidSolution &solution,
                                     RouteContext &context, Random &random) {
     double average_length = static_cast<double>(problem.num_customers - 1) / context.NumRoutes();
     double max_length = std::min(static_cast<double>(max_length_), average_length);
@@ -86,7 +86,7 @@ namespace alkaidsd::ruin_method {
     return customer_indices;
   }
 
-  Node SisrsRuin::GetRouteHead(Solution &solution, Node node_index, int &position) {
+  Node SisrsRuin::GetRouteHead(AlkaidSolution &solution, Node node_index, int &position) {
     position = 0;
     while (true) {
       Node predecessor = solution.Predecessor(node_index);
@@ -98,7 +98,7 @@ namespace alkaidsd::ruin_method {
     }
   }
 
-  void SisrsRuin::GetRoute(const Solution &solution, Node head, std::vector<Node> &route) {
+  void SisrsRuin::GetRoute(const AlkaidSolution &solution, Node head, std::vector<Node> &route) {
     route.clear();
     while (head) {
       route.emplace_back(head);

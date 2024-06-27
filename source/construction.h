@@ -8,5 +8,5 @@
 #include "random.h"
 
 namespace alkaidsd {
-  Solution Construct(const Problem &problem, Random &random);
+  AlkaidSolution Construct(const Problem &problem, Random &random);
 }  // namespace alkaidsd
