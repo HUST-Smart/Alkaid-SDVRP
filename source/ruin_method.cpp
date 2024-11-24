@@ -12,11 +12,11 @@ namespace alkaidsd::ruin_method {
   RandomRuin::RandomRuin(std::vector<int> num_perturb_customers)
       : num_perturb_customers_(std::move(num_perturb_customers)) {}
 
-  std::vector<Node> RandomRuin::Ruin(const Problem &problem, [[maybe_unused]] AlkaidSolution &solution,
+  std::vector<Node> RandomRuin::Ruin(const Instance &instance, [[maybe_unused]] AlkaidSolution &solution,
                                      [[maybe_unused]] RouteContext &context, Random &random) {
     int num_perturb = num_perturb_customers_[random.NextInt(
         0, static_cast<int>(num_perturb_customers_.size()) - 1)];
-    std::vector<Node> customers(problem.num_customers - 1);
+    std::vector<Node> customers(instance.num_customers - 1);
     std::iota(customers.begin(), customers.end(), 1);
     random.Shuffle(customers.begin(), customers.end());
     customers.erase(customers.begin() + num_perturb, customers.end());
@@ -30,15 +30,15 @@ namespace alkaidsd::ruin_method {
         split_rate_(split_rate),
         preserved_probability_(preserved_probability) {}
 
-  std::vector<Node> SisrsRuin::Ruin(const Problem &problem, AlkaidSolution &solution,
+  std::vector<Node> SisrsRuin::Ruin(const Instance &instance, AlkaidSolution &solution,
                                     RouteContext &context, Random &random) {
-    double average_length = static_cast<double>(problem.num_customers - 1) / context.NumRoutes();
+    double average_length = static_cast<double>(instance.num_customers - 1) / context.NumRoutes();
     double max_length = std::min(static_cast<double>(max_length_), average_length);
     double max_strings = 4.0 * average_customers_ / (1 + max_length_) - 1;
     size_t num_strings = static_cast<size_t>(random.NextFloat() * max_strings) + 1;
-    int customer_seed = random.NextInt(1, problem.num_customers - 1);
+    int customer_seed = random.NextInt(1, instance.num_customers - 1);
     std::vector<Node> node_indices(solution.NodeIndices());
-    auto &&seed_distances = problem.distance_matrix[customer_seed];
+    auto &&seed_distances = instance.distance_matrix[customer_seed];
     std::stable_sort(node_indices.begin(), node_indices.end(), [&](Node lhs, Node rhs) {
       return seed_distances[solution.Customer(lhs)] < seed_distances[solution.Customer(rhs)];
     });

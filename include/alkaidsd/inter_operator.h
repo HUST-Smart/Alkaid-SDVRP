@@ -1,6 +1,6 @@
 #pragma once
 
-#include <alkaidsd/problem.h>
+#include <alkaidsd/instance.h>
 #include <alkaidsd/solution.h>
 
 #include <vector>
@@ -25,7 +25,7 @@ namespace alkaidsd::inter_operator {
 
     /**
      * @brief Executes the inter-operator on the given solution.
-     * @param problem The problem instance.
+     * @param instance The problem instance.
      * @param solution The solution instance.
      * @param context The route context.
      * @param random The random generator.
@@ -33,7 +33,7 @@ namespace alkaidsd::inter_operator {
      * @return A vector of route indices representing the modified routes. Empty if the operator
      * fails to optimize the solution.
      */
-    virtual std::vector<Node> operator()(const Problem &problem, AlkaidSolution &solution,
+    virtual std::vector<Node> operator()(const Instance &instance, AlkaidSolution &solution,
                                          RouteContext &context, Random &random,
                                          CacheMap &cache_map) const = 0;
   };
@@ -46,7 +46,7 @@ namespace alkaidsd::inter_operator {
    */
   template <int num_x, int num_y> class Swap : public InterOperator {
   public:
-    std::vector<Node> operator()(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
+    std::vector<Node> operator()(const Instance &instance, AlkaidSolution &solution, RouteContext &context,
                                  Random &random, CacheMap &cache_map) const override;
   };
 
@@ -56,7 +56,7 @@ namespace alkaidsd::inter_operator {
    */
   class Relocate : public InterOperator {
   public:
-    std::vector<Node> operator()(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
+    std::vector<Node> operator()(const Instance &instance, AlkaidSolution &solution, RouteContext &context,
                                  Random &random, CacheMap &cache_map) const override;
   };
 
@@ -66,7 +66,7 @@ namespace alkaidsd::inter_operator {
    */
   class SwapStar : public InterOperator {
   public:
-    std::vector<Node> operator()(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
+    std::vector<Node> operator()(const Instance &instance, AlkaidSolution &solution, RouteContext &context,
                                  Random &random, CacheMap &cache_map) const override;
   };
 
@@ -76,7 +76,7 @@ namespace alkaidsd::inter_operator {
    */
   class Cross : public InterOperator {
   public:
-    std::vector<Node> operator()(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
+    std::vector<Node> operator()(const Instance &instance, AlkaidSolution &solution, RouteContext &context,
                                  Random &random, CacheMap &cache_map) const override;
   };
 
@@ -86,7 +86,7 @@ namespace alkaidsd::inter_operator {
    */
   class SdSwapStar : public InterOperator {
   public:
-    std::vector<Node> operator()(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
+    std::vector<Node> operator()(const Instance &instance, AlkaidSolution &solution, RouteContext &context,
                                  Random &random, CacheMap &cache_map) const override;
   };
 
@@ -97,7 +97,7 @@ namespace alkaidsd::inter_operator {
    */
   class SdSwapOneOne : public InterOperator {
   public:
-    std::vector<Node> operator()(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
+    std::vector<Node> operator()(const Instance &instance, AlkaidSolution &solution, RouteContext &context,
                                  Random &random, CacheMap &cache_map) const override;
   };
 
@@ -108,7 +108,7 @@ namespace alkaidsd::inter_operator {
    */
   class SdSwapTwoOne : public InterOperator {
   public:
-    std::vector<Node> operator()(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
+    std::vector<Node> operator()(const Instance &instance, AlkaidSolution &solution, RouteContext &context,
                                  Random &random, CacheMap &cache_map) const override;
   };
 }  // namespace alkaidsd::inter_operator

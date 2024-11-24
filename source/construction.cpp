@@ -26,7 +26,7 @@ namespace alkaidsd {
     return position;
   }
 
-  template <class Func> void SequentialInsertion(const Problem &problem, const Func &func,
+  template <class Func> void SequentialInsertion(const Instance &instance, const Func &func,
                                                  CandidateList &candidate_list, Random &random,
                                                  AlkaidSolution &solution, RouteContext &context) {
     InsertionWithCost<float> best_insertion{};
@@ -41,7 +41,7 @@ namespace alkaidsd {
         best_insertion.cost = Delta(std::numeric_limits<float>::max(), -1);
         for (int i = 0; i < static_cast<int>(candidate_list.size()); ++i) {
           auto [customer, demand] = candidate_list[i];
-          if (context.Load(route_index) + demand > problem.capacity) {
+          if (context.Load(route_index) + demand > instance.capacity) {
             continue;
           }
           auto insertion
@@ -72,7 +72,7 @@ namespace alkaidsd {
     }
   }
 
-  template <class Func> void ParallelInsertion(const Problem &problem, const Func &func,
+  template <class Func> void ParallelInsertion(const Instance &instance, const Func &func,
                                                CandidateList &candidate_list, Random &random,
                                                AlkaidSolution &solution, RouteContext &context) {
     std::vector<std::vector<InsertionWithCost<float>>> best_insertions(candidate_list.size());
@@ -91,7 +91,7 @@ namespace alkaidsd {
         for (int j = 0; j < static_cast<int>(best_insertions[i].size()); ++j) {
           Node route_index = best_insertions[i][j].route_index;
           auto [customer, demand] = candidate_list[i];
-          if (context.Load(route_index) + demand > problem.capacity) {
+          if (context.Load(route_index) + demand > instance.capacity) {
             best_insertions[i][j] = best_insertions[i].back();
             best_insertions[i].pop_back();
             --j;
@@ -134,24 +134,24 @@ namespace alkaidsd {
     }
   }
 
-  template <class Func> void InsertCandidates(const Problem &problem, const Func &func,
+  template <class Func> void InsertCandidates(const Instance &instance, const Func &func,
                                               CandidateList &candidate_list, Random &random,
                                               AlkaidSolution &solution, RouteContext &context) {
     int strategy = random.NextInt(0, 1);
     if (strategy == kSis) {
-      SequentialInsertion(problem, func, candidate_list, random, solution, context);
+      SequentialInsertion(instance, func, candidate_list, random, solution, context);
     } else {
-      ParallelInsertion(problem, func, candidate_list, random, solution, context);
+      ParallelInsertion(instance, func, candidate_list, random, solution, context);
     }
   }
 
-  AlkaidSolution Construct(const Problem &problem, Random &random) {
+  AlkaidSolution Construct(const Instance &instance, Random &random) {
     CandidateList candidate_list;
-    Node num_fleets = CalcFleetLowerBound(problem);
-    for (Node i = 1; i < problem.num_customers; ++i) {
-      int demand = problem.demands[i];
+    Node num_fleets = CalcFleetLowerBound(instance);
+    for (Node i = 1; i < instance.num_customers; ++i) {
+      int demand = instance.demands[i];
       while (demand > 0) {
-        int split_demand = std::min(demand, problem.capacity);
+        int split_demand = std::min(demand, instance.capacity);
         candidate_list.emplace_back(i, split_demand);
         demand -= split_demand;
       }
@@ -167,22 +167,22 @@ namespace alkaidsd {
       auto func = [&](Node predecessor, Node successor, Node customer) {
         Node pre_customer = solution.Customer(predecessor);
         Node suc_customer = solution.Customer(successor);
-        return static_cast<float>(problem.distance_matrix[pre_customer][customer]
-                                  + problem.distance_matrix[customer][suc_customer]
-                                  - problem.distance_matrix[pre_customer][suc_customer])
-               - 2 * gamma * problem.distance_matrix[0][customer];
+        return static_cast<float>(instance.distance_matrix[pre_customer][customer]
+                                  + instance.distance_matrix[customer][suc_customer]
+                                  - instance.distance_matrix[pre_customer][suc_customer])
+               - 2 * gamma * instance.distance_matrix[0][customer];
       };
-      InsertCandidates(problem, func, candidate_list, random, solution, context);
+      InsertCandidates(instance, func, candidate_list, random, solution, context);
     } else {
       auto func = [&](Node predecessor, [[maybe_unused]] Node successor, Node customer) {
         Node pre_customer = solution.Customer(predecessor);
         if (pre_customer == 0) {
           return std::numeric_limits<float>::max();
         } else {
-          return static_cast<float>(problem.distance_matrix[pre_customer][customer]);
+          return static_cast<float>(instance.distance_matrix[pre_customer][customer]);
         }
       };
-      InsertCandidates(problem, func, candidate_list, random, solution, context);
+      InsertCandidates(instance, func, candidate_list, random, solution, context);
     }
     return solution;
   }

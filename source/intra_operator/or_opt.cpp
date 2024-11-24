@@ -26,25 +26,25 @@ namespace alkaidsd::intra_operator {
     context.SetHead(route_index, solution.Successor(0));
   }
 
-  template <int num> void OrOptInner(const Problem &problem, const AlkaidSolution &solution, Node head,
+  template <int num> void OrOptInner(const Instance &instance, const AlkaidSolution &solution, Node head,
                                      Node tail, Node predecessor, Node successor,
                                      OrOptMove &best_move, Delta<int> &best_delta, Random &random) {
     Node predecessor_head = solution.Predecessor(head);
     Node successor_tail = solution.Successor(tail);
     int delta
-        = problem.distance_matrix[solution.Customer(predecessor_head)]
+        = instance.distance_matrix[solution.Customer(predecessor_head)]
                                  [solution.Customer(successor_tail)]
-          - problem.distance_matrix[solution.Customer(predecessor_head)][solution.Customer(head)]
-          - problem.distance_matrix[solution.Customer(tail)][solution.Customer(successor_tail)]
-          - problem.distance_matrix[solution.Customer(predecessor)][solution.Customer(successor)];
+          - instance.distance_matrix[solution.Customer(predecessor_head)][solution.Customer(head)]
+          - instance.distance_matrix[solution.Customer(tail)][solution.Customer(successor_tail)]
+          - instance.distance_matrix[solution.Customer(predecessor)][solution.Customer(successor)];
     bool reversed = false;
     int insertion_delta
-        = problem.distance_matrix[solution.Customer(predecessor)][solution.Customer(head)]
-          + problem.distance_matrix[solution.Customer(successor)][solution.Customer(tail)];
+        = instance.distance_matrix[solution.Customer(predecessor)][solution.Customer(head)]
+          + instance.distance_matrix[solution.Customer(successor)][solution.Customer(tail)];
     if (num > 1) {
       int reversed_delta
-          = problem.distance_matrix[solution.Customer(predecessor)][solution.Customer(tail)]
-            + problem.distance_matrix[solution.Customer(successor)][solution.Customer(head)];
+          = instance.distance_matrix[solution.Customer(predecessor)][solution.Customer(tail)]
+            + instance.distance_matrix[solution.Customer(successor)][solution.Customer(head)];
       if (reversed_delta < insertion_delta) {
         insertion_delta = reversed_delta;
         reversed = true;
@@ -57,7 +57,7 @@ namespace alkaidsd::intra_operator {
   }
 
   template <int num>
-  bool intra_operator::OrOpt<num>::operator()(const Problem &problem, Node route_index,
+  bool intra_operator::OrOpt<num>::operator()(const Instance &instance, Node route_index,
                                               AlkaidSolution &solution, RouteContext &context,
                                               Random &random) const {
     OrOptMove best_move{};
@@ -72,14 +72,14 @@ namespace alkaidsd::intra_operator {
       predecessor = solution.Successor(tail);
       while (predecessor) {
         successor = solution.Successor(predecessor);
-        OrOptInner<num>(problem, solution, head, tail, predecessor, successor, best_move,
+        OrOptInner<num>(instance, solution, head, tail, predecessor, successor, best_move,
                         best_delta, random);
         predecessor = successor;
       }
       successor = solution.Predecessor(head);
       while (successor) {
         predecessor = solution.Predecessor(successor);
-        OrOptInner<num>(problem, solution, head, tail, predecessor, successor, best_move,
+        OrOptInner<num>(instance, solution, head, tail, predecessor, successor, best_move,
                         best_delta, random);
         successor = predecessor;
       }

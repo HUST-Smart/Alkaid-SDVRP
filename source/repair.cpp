@@ -3,7 +3,7 @@
 #include <map>
 
 namespace alkaidsd {
-  void MergeAdjacentSameCustomers([[maybe_unused]] const Problem &problem, Node route_index,
+  void MergeAdjacentSameCustomers([[maybe_unused]] const Instance &instance, Node route_index,
                                   AlkaidSolution &solution, RouteContext &context) {
     Node node_index = context.Head(route_index);
     while (true) {
@@ -20,19 +20,19 @@ namespace alkaidsd {
     }
   }
 
-  int CalcRemovalDelta(const Problem &problem, const AlkaidSolution &solution, Node node_index) {
+  int CalcRemovalDelta(const Instance &instance, const AlkaidSolution &solution, Node node_index) {
     Node predecessor = solution.Predecessor(node_index);
     Node successor = solution.Successor(node_index);
-    return problem.distance_matrix[solution.Customer(predecessor)][solution.Customer(successor)]
-           - problem.distance_matrix[solution.Customer(predecessor)][solution.Customer(node_index)]
-           - problem.distance_matrix[solution.Customer(node_index)][solution.Customer(successor)];
+    return instance.distance_matrix[solution.Customer(predecessor)][solution.Customer(successor)]
+           - instance.distance_matrix[solution.Customer(predecessor)][solution.Customer(node_index)]
+           - instance.distance_matrix[solution.Customer(node_index)][solution.Customer(successor)];
   }
 
-  void Repair(const Problem &problem, Node route_index, AlkaidSolution &solution, RouteContext &context) {
+  void Repair(const Instance &instance, Node route_index, AlkaidSolution &solution, RouteContext &context) {
     if (!context.Head(route_index)) {
       return;
     }
-    MergeAdjacentSameCustomers(problem, route_index, solution, context);
+    MergeAdjacentSameCustomers(instance, route_index, solution, context);
     std::map<Node, Node> customer_node_map;
     Node node_index = context.Head(route_index);
     solution.SetSuccessor(0, node_index);
@@ -44,8 +44,8 @@ namespace alkaidsd {
         customer_node_map[customer] = node_index;
       } else {
         Node &last_node_index = it->second;
-        if (CalcRemovalDelta(problem, solution, last_node_index)
-            < CalcRemovalDelta(problem, solution, node_index)) {
+        if (CalcRemovalDelta(instance, solution, last_node_index)
+            < CalcRemovalDelta(instance, solution, node_index)) {
           std::swap(last_node_index, node_index);
         }
         solution.SetLoad(last_node_index,

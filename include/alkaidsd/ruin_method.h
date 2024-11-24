@@ -1,6 +1,6 @@
 #pragma once
 
-#include <alkaidsd/problem.h>
+#include <alkaidsd/instance.h>
 #include <alkaidsd/solution.h>
 
 #include <vector>
@@ -30,13 +30,13 @@ namespace alkaidsd::ruin_method {
      * This method is responsible for removing nodes from the solution based on the specified ruin
      * method.
      *
-     * @param problem The problem instance.
+     * @param instance The problem instance.
      * @param solution The solution to be ruined.
      * @param context The route context.
      * @param random The random number generator.
      * @return A vector of nodes that have been removed from the solution.
      */
-    virtual std::vector<Node> Ruin(const Problem &problem, AlkaidSolution &solution,
+    virtual std::vector<Node> Ruin(const Instance &instance, AlkaidSolution &solution,
                                    RouteContext &context, Random &random)
         = 0;
   };
@@ -57,7 +57,7 @@ namespace alkaidsd::ruin_method {
      */
     explicit RandomRuin(std::vector<int> num_perturb_customers);
 
-    std::vector<Node> Ruin(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
+    std::vector<Node> Ruin(const Instance &instance, AlkaidSolution &solution, RouteContext &context,
                            Random &random) override;
 
   private:
@@ -85,7 +85,7 @@ namespace alkaidsd::ruin_method {
     SisrsRuin(int average_customers, int max_length, double split_rate,
               double preserved_probability);
 
-    std::vector<Node> Ruin(const Problem &problem, AlkaidSolution &solution, RouteContext &context,
+    std::vector<Node> Ruin(const Instance &instance, AlkaidSolution &solution, RouteContext &context,
                            Random &random) override;
 
   private:

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <alkaidsd/problem.h>
+#include <alkaidsd/instance.h>
 
 #include <memory>
 #include <vector>
@@ -22,11 +22,11 @@ namespace alkaidsd::sorter {
 
     /**
      * @brief Sorts the given vector of customers based on a specific criterion.
-     * @param problem The problem instance.
+     * @param instance The problem instance.
      * @param customers customers to be sorted.
      * @param random The random number generator.
      */
-    virtual void operator()(const Problem &problem, std::vector<Node> &customers,
+    virtual void operator()(const Instance &instance, std::vector<Node> &customers,
                             Random &random) const = 0;
   };
 
@@ -44,11 +44,11 @@ namespace alkaidsd::sorter {
 
     /**
      * @brief Sorts the given vector of customers using the added sort operators.
-     * @param problem The problem instance.
+     * @param instance The problem instance.
      * @param customers customers to be sorted.
      * @param random The random number generator.
      */
-    void Sort(const Problem &problem, std::vector<Node> &customers, Random &random) const;
+    void Sort(const Instance &instance, std::vector<Node> &customers, Random &random) const;
 
   private:
     double sum_weights_ = 0;
@@ -60,7 +60,7 @@ namespace alkaidsd::sorter {
    */
   class SortByRandom : public SortOperator {
   public:
-    void operator()(const Problem &problem, std::vector<Node> &customers,
+    void operator()(const Instance &instance, std::vector<Node> &customers,
                     Random &random) const override;
   };
 
@@ -69,7 +69,7 @@ namespace alkaidsd::sorter {
    */
   class SortByDemand : public SortOperator {
   public:
-    void operator()(const Problem &problem, std::vector<Node> &customers,
+    void operator()(const Instance &instance, std::vector<Node> &customers,
                     Random &random) const override;
   };
 
@@ -79,7 +79,7 @@ namespace alkaidsd::sorter {
    */
   class SortByFar : public SortOperator {
   public:
-    void operator()(const Problem &problem, std::vector<Node> &customers,
+    void operator()(const Instance &instance, std::vector<Node> &customers,
                     Random &random) const override;
   };
 
@@ -89,7 +89,7 @@ namespace alkaidsd::sorter {
    */
   class SortByClose : public SortOperator {
   public:
-    void operator()(const Problem &problem, std::vector<Node> &customers,
+    void operator()(const Instance &instance, std::vector<Node> &customers,
                     Random &random) const override;
   };
 }  // namespace alkaidsd::sorter

@@ -32,17 +32,17 @@ namespace alkaidsd::inter_operator {
     }
   }
 
-  void SwapStarInner(const Problem &problem, const AlkaidSolution &solution, const RouteContext &context,
+  void SwapStarInner(const Instance &instance, const AlkaidSolution &solution, const RouteContext &context,
                      Node route_x, Node route_y, BaseCache<SwapStarMove> &cache,
                      StarCaches &star_caches, Random &random) {
-    star_caches.Preprocess(problem, solution, context, route_x, random);
-    star_caches.Preprocess(problem, solution, context, route_y, random);
+    star_caches.Preprocess(instance, solution, context, route_x, random);
+    star_caches.Preprocess(instance, solution, context, route_y, random);
     Node node_x = context.Head(route_x);
     while (node_x) {
       auto &&insertion_x = star_caches.Get(route_y, solution.Customer(node_x));
       int load_x = solution.Load(node_x);
-      int load_y_lower = -problem.capacity + context.Load(route_y) + load_x;
-      int load_y_upper = problem.capacity - context.Load(route_x) + load_x;
+      int load_y_lower = -instance.capacity + context.Load(route_y) + load_x;
+      int load_y_upper = instance.capacity - context.Load(route_x) + load_x;
       Node node_y = context.Head(route_y);
       while (node_y) {
         int load_y = solution.Load(node_y);
@@ -52,10 +52,10 @@ namespace alkaidsd::inter_operator {
           Node successor_x = solution.Successor(node_x);
           Node predecessor_y = solution.Predecessor(node_y);
           Node successor_y = solution.Successor(node_y);
-          int delta = -CalcDelta(problem, solution, node_x, predecessor_x, successor_x)
-                      - CalcDelta(problem, solution, node_y, predecessor_y, successor_y);
-          int delta_x = CalcDelta(problem, solution, node_x, predecessor_y, successor_y);
-          int delta_y = CalcDelta(problem, solution, node_y, predecessor_x, successor_x);
+          int delta = -CalcDelta(instance, solution, node_x, predecessor_x, successor_x)
+                      - CalcDelta(instance, solution, node_y, predecessor_y, successor_y);
+          int delta_x = CalcDelta(instance, solution, node_x, predecessor_y, successor_y);
+          int delta_y = CalcDelta(instance, solution, node_y, predecessor_x, successor_x);
           auto best_insertion_x = insertion_x.FindBestWithoutNode(node_y);
           if (best_insertion_x && best_insertion_x->delta.value < delta_x) {
             delta_x = best_insertion_x->delta.value;
@@ -80,7 +80,7 @@ namespace alkaidsd::inter_operator {
     }
   }
 
-  std::vector<Node> inter_operator::SwapStar::operator()(const Problem &problem, AlkaidSolution &solution,
+  std::vector<Node> inter_operator::SwapStar::operator()(const Instance &instance, AlkaidSolution &solution,
                                                          RouteContext &context, Random &random,
                                                          CacheMap &cache_map) const {
     auto &caches = cache_map.Get<InterRouteCache<SwapStarMove>>(solution, context);
@@ -91,7 +91,7 @@ namespace alkaidsd::inter_operator {
       for (Node route_y = route_x + 1; route_y < context.NumRoutes(); ++route_y) {
         auto &cache = caches.Get(route_x, route_y);
         if (!cache.TryReuse()) {
-          SwapStarInner(problem, solution, context, route_x, route_y, cache, star_caches, random);
+          SwapStarInner(instance, solution, context, route_x, route_y, cache, star_caches, random);
         } else {
           cache.move.route_x = route_x;
           cache.move.route_y = route_y;

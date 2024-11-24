@@ -1,6 +1,6 @@
 #pragma once
 
-#include <alkaidsd/problem.h>
+#include <alkaidsd/instance.h>
 #include <alkaidsd/solution.h>
 
 #include <vector>
@@ -23,14 +23,14 @@ namespace alkaidsd::intra_operator {
 
     /**
      * @brief Executes the intra-operator on a specific route within a solution.
-     * @param problem The problem instance.
+     * @param instance The problem instance.
      * @param route_index The index of the route to apply the operator to.
      * @param solution The solution to modify.
      * @param context The route context.
      * @param random The random number generator.
      * @return True if the operator successfully modifies the solution, false otherwise.
      */
-    virtual bool operator()(const Problem &problem, Node route_index, AlkaidSolution &solution,
+    virtual bool operator()(const Instance &instance, Node route_index, AlkaidSolution &solution,
                             RouteContext &context, Random &random) const = 0;
   };
 
@@ -41,7 +41,7 @@ namespace alkaidsd::intra_operator {
    */
   class Exchange : public IntraOperator {
   public:
-    bool operator()(const Problem &problem, Node route_index, AlkaidSolution &solution,
+    bool operator()(const Instance &instance, Node route_index, AlkaidSolution &solution,
                     RouteContext &context, Random &random) const override;
   };
 
@@ -52,7 +52,7 @@ namespace alkaidsd::intra_operator {
    */
   template <int num> class OrOpt : public IntraOperator {
   public:
-    bool operator()(const Problem &problem, Node route_index, AlkaidSolution &solution,
+    bool operator()(const Instance &instance, Node route_index, AlkaidSolution &solution,
                     RouteContext &context, Random &random) const override;
   };
 }  // namespace alkaidsd::intra_operator

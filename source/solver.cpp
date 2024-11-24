@@ -13,16 +13,16 @@
 #include "utils.h"
 
 namespace alkaidsd {
-  void IntraRouteSearch(const Problem &problem, const AlkaidConfig &config, Node route_index,
+  void IntraRouteSearch(const Instance &instance, const AlkaidConfig &config, Node route_index,
                         AlkaidSolution &solution, RouteContext &context, Random &random) {
-    Repair(problem, route_index, solution, context);
+    Repair(instance, route_index, solution, context);
     std::vector<Node> intra_neighborhoods(config.intra_operators.size());
     std::iota(intra_neighborhoods.begin(), intra_neighborhoods.end(), 0);
     while (true) {
       random.Shuffle(intra_neighborhoods.begin(), intra_neighborhoods.end());
       bool improved = false;
       for (Node neighborhood : intra_neighborhoods) {
-        improved = (*config.intra_operators[neighborhood])(problem, route_index, solution, context,
+        improved = (*config.intra_operators[neighborhood])(instance, route_index, solution, context,
                                                            random);
         if (improved) {
           break;
@@ -34,7 +34,7 @@ namespace alkaidsd {
     }
   }
 
-  void RandomizedVariableNeighborhoodDescent(const Problem &problem, const AlkaidConfig &config,
+  void RandomizedVariableNeighborhoodDescent(const Instance &instance, const AlkaidConfig &config,
                                              AlkaidSolution &solution, RouteContext &context,
                                              Random &random, CacheMap &cache_map) {
     cache_map.Reset(solution, context);
@@ -45,7 +45,7 @@ namespace alkaidsd {
       bool improved = false;
       for (int neighborhood : inter_neighborhoods) {
         Node original_num_routes = context.NumRoutes();
-        auto routes = (*config.inter_operators[neighborhood])(problem, solution, context, random,
+        auto routes = (*config.inter_operators[neighborhood])(instance, solution, context, random,
                                                               cache_map);
         if (!routes.empty()) {
           std::sort(routes.begin(), routes.end());
@@ -72,7 +72,7 @@ namespace alkaidsd {
             context.SetHead(num_routes, head);
             context.UpdateRouteContext(solution, num_routes, 0);
             cache_map.AddRoute(num_routes);
-            IntraRouteSearch(problem, config, num_routes, solution, context, random);
+            IntraRouteSearch(instance, config, num_routes, solution, context, random);
             ++num_routes;
           }
           context.SetNumRoutes(num_routes);
@@ -86,11 +86,11 @@ namespace alkaidsd {
     cache_map.Save(solution, context);
   }
 
-  void Perturb(const Problem &problem, const AlkaidConfig &config, AlkaidSolution &solution,
+  void Perturb(const Instance &instance, const AlkaidConfig &config, AlkaidSolution &solution,
                RouteContext &context, Random &random) {
     context.CalcRouteContext(solution);
-    std::vector<Node> customers = config.ruin_method->Ruin(problem, solution, context, random);
-    config.sorter.Sort(problem, customers, random);
+    std::vector<Node> customers = config.ruin_method->Ruin(instance, solution, context, random);
+    config.sorter.Sort(instance, customers, random);
     for (Node customer : customers) {
       for (Node route_index = 0; route_index < context.NumRoutes(); ++route_index) {
         Node node_index = context.Head(route_index);
@@ -109,7 +109,7 @@ namespace alkaidsd {
       }
     }
     for (Node customer : customers) {
-      SplitReinsertion(problem, customer, problem.demands[customer], config.blink_rate, solution,
+      SplitReinsertion(instance, customer, instance.demands[customer], config.blink_rate, solution,
                        context, random);
     }
   }
@@ -120,7 +120,7 @@ namespace alkaidsd {
         .count();
   }
 
-  AlkaidSolution AlkaidSolver::Solve(const AlkaidConfig &config, const Problem &problem) {
+  AlkaidSolution AlkaidSolver::Solve(const AlkaidConfig &config, const Instance &instance) {
     if (config.listener != nullptr) {
       config.listener->OnStart();
     }
@@ -130,11 +130,11 @@ namespace alkaidsd {
     AlkaidSolution best_solution;
     int best_objective = std::numeric_limits<int>::max();
     auto start_time = std::chrono::high_resolution_clock::now();
-    const int kMaxStagnation = std::min(5000, static_cast<int>(problem.num_customers)
-                                                  * static_cast<int>(CalcFleetLowerBound(problem)));
+    const int kMaxStagnation = std::min(5000, static_cast<int>(instance.num_customers)
+                                                  * static_cast<int>(CalcFleetLowerBound(instance)));
     while (ElapsedTime(start_time) < config.time_limit) {
-      auto solution = Construct(problem, random);
-      int objective = solution.CalcObjective(problem);
+      auto solution = Construct(instance, random);
+      int objective = solution.CalcObjective(instance);
       int iter_best_objective = objective;
       auto new_solution = solution;
       auto acceptance_rule = config.acceptance_rule();
@@ -143,11 +143,11 @@ namespace alkaidsd {
         ++num_stagnation;
         context.CalcRouteContext(new_solution);
         for (Node i = 0; i < context.NumRoutes(); ++i) {
-          IntraRouteSearch(problem, config, i, new_solution, context, random);
+          IntraRouteSearch(instance, config, i, new_solution, context, random);
         }
-        RandomizedVariableNeighborhoodDescent(problem, config, new_solution, context, random,
+        RandomizedVariableNeighborhoodDescent(instance, config, new_solution, context, random,
                                               cache_map);
-        int new_objective = new_solution.CalcObjective(problem);
+        int new_objective = new_solution.CalcObjective(instance);
         if (new_objective < iter_best_objective) {
           num_stagnation = 0;
           iter_best_objective = new_objective;
@@ -165,7 +165,7 @@ namespace alkaidsd {
         } else {
           new_solution = solution;
         }
-        Perturb(problem, config, new_solution, context, random);
+        Perturb(instance, config, new_solution, context, random);
       }
     }
     if (config.listener != nullptr) {

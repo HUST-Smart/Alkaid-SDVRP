@@ -1,27 +1,27 @@
 #pragma once
 
-#include <alkaidsd/problem.h>
+#include <alkaidsd/instance.h>
 
 #include <ostream>
 #include <vector>
 
 namespace alkaidsd {
   /**
-   * @brief The solution representation to a problem.
+   * @brief The solution representation to a problem instance.
    */
   class Solution {
   public:
     /**
      * @brief Calculate the objective value of the solution.
      *
-     * @param problem The problem instance.
+     * @param instance The problem instance.
      * @return The objective value.
      */
-    virtual int CalcObjective(const Problem& problem) const = 0;
+    virtual int CalcObjective(const Instance& instance) const = 0;
   };
 
   /**
-   * @brief The AlkaidSolution class represents a solution to a problem.
+   * @brief The AlkaidSolution class represents a solution to a problem instance.
    */
   class AlkaidSolution : public Solution {
   public:
@@ -184,17 +184,17 @@ namespace alkaidsd {
     /**
      * @brief Calculate the objective value of the solution.
      *
-     * @param problem The problem instance.
+     * @param instance The problem instance.
      * @return The objective value.
      */
-    virtual int CalcObjective(const Problem& problem) const override {
+    virtual int CalcObjective(const Instance& instance) const override {
       int objective = 0;
       for (Node node_index : NodeIndices()) {
         Node predecessor = Predecessor(node_index);
         Node successor = Successor(node_index);
-        objective += problem.distance_matrix[Customer(node_index)][Customer(predecessor)];
+        objective += instance.distance_matrix[Customer(node_index)][Customer(predecessor)];
         if (successor == 0) {
-          objective += problem.distance_matrix[Customer(node_index)][0];
+          objective += instance.distance_matrix[Customer(node_index)][0];
         }
       }
       return objective;

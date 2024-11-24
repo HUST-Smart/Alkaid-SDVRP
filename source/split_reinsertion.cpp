@@ -13,20 +13,20 @@ namespace alkaidsd {
         : insertion(insertion), residual(residual) {}
   };
 
-  void SplitReinsertion(const Problem &problem, Node customer, int demand, double blink_rate,
+  void SplitReinsertion(const Instance &instance, Node customer, int demand, double blink_rate,
                         AlkaidSolution &solution, RouteContext &context, Random &random) {
     auto func = [&](Node predecessor, Node successor, Node customer) {
       Node pre_customer = solution.Customer(predecessor);
       Node suc_customer = solution.Customer(successor);
-      return problem.distance_matrix[customer][pre_customer]
-             + problem.distance_matrix[customer][suc_customer]
-             - problem.distance_matrix[pre_customer][suc_customer];
+      return instance.distance_matrix[customer][pre_customer]
+             + instance.distance_matrix[customer][suc_customer]
+             - instance.distance_matrix[pre_customer][suc_customer];
     };
     std::vector<SplitReinsertionMove> moves;
     moves.reserve(context.NumRoutes());
     int sum_residual = 0;
     for (Node route_index = 0; route_index < context.NumRoutes(); ++route_index) {
-      int residual = std::min(demand, problem.capacity - context.Load(route_index));
+      int residual = std::min(demand, instance.capacity - context.Load(route_index));
       if (residual > 0) {
         auto insertion = CalcBestInsertion(solution, func, context, route_index, customer, random);
         moves.emplace_back(insertion, residual);

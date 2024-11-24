@@ -25,27 +25,27 @@ namespace alkaidsd::intra_operator {
     context.UpdateRouteContext(solution, route_index, predecessor_a);
   }
 
-  void ExchangeInner(const Problem &problem, const AlkaidSolution &solution, Node node_a, Node node_b,
+  void ExchangeInner(const Instance &instance, const AlkaidSolution &solution, Node node_a, Node node_b,
                      ExchangeMove &best_move, Delta<int> &best_delta, Random &random) {
     Node predecessor_a = solution.Predecessor(node_a);
     Node successor_a = solution.Successor(node_a);
     Node predecessor_b = solution.Predecessor(node_b);
     Node successor_b = solution.Successor(node_b);
     int delta
-        = problem.distance_matrix[solution.Customer(predecessor_a)][solution.Customer(node_b)]
-          + problem.distance_matrix[solution.Customer(node_b)][solution.Customer(successor_a)]
-          + problem.distance_matrix[solution.Customer(predecessor_b)][solution.Customer(node_a)]
-          + problem.distance_matrix[solution.Customer(node_a)][solution.Customer(successor_b)]
-          - problem.distance_matrix[solution.Customer(predecessor_a)][solution.Customer(node_a)]
-          - problem.distance_matrix[solution.Customer(node_a)][solution.Customer(successor_a)]
-          - problem.distance_matrix[solution.Customer(predecessor_b)][solution.Customer(node_b)]
-          - problem.distance_matrix[solution.Customer(node_b)][solution.Customer(successor_b)];
+        = instance.distance_matrix[solution.Customer(predecessor_a)][solution.Customer(node_b)]
+          + instance.distance_matrix[solution.Customer(node_b)][solution.Customer(successor_a)]
+          + instance.distance_matrix[solution.Customer(predecessor_b)][solution.Customer(node_a)]
+          + instance.distance_matrix[solution.Customer(node_a)][solution.Customer(successor_b)]
+          - instance.distance_matrix[solution.Customer(predecessor_a)][solution.Customer(node_a)]
+          - instance.distance_matrix[solution.Customer(node_a)][solution.Customer(successor_a)]
+          - instance.distance_matrix[solution.Customer(predecessor_b)][solution.Customer(node_b)]
+          - instance.distance_matrix[solution.Customer(node_b)][solution.Customer(successor_b)];
     if (best_delta.Update(delta, random)) {
       best_move = {node_a, node_b};
     }
   }
 
-  bool intra_operator::Exchange::operator()(const Problem &problem, Node route_index,
+  bool intra_operator::Exchange::operator()(const Instance &instance, Node route_index,
                                             AlkaidSolution &solution, RouteContext &context,
                                             Random &random) const {
     ExchangeMove best_move{};
@@ -56,7 +56,7 @@ namespace alkaidsd::intra_operator {
       if (node_b) {
         node_b = solution.Successor(node_b);
         while (node_b) {
-          ExchangeInner(problem, solution, node_a, node_b, best_move, best_delta, random);
+          ExchangeInner(instance, solution, node_a, node_b, best_move, best_delta, random);
           node_b = solution.Successor(node_b);
         }
       }

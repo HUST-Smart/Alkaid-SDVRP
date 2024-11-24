@@ -49,7 +49,6 @@ namespace alkaidsd {
   struct Config {
     uint32_t random_seed; /**< The random seed for the optimization process. */
     double time_limit;    /**< The time limit (in seconds) for the optimization process. */
-    std::unique_ptr<Listener> listener; /**< The listener for receiving optimization events. */
   };
 
   /**
@@ -67,5 +66,6 @@ namespace alkaidsd {
     std::unique_ptr<ruin_method::RuinMethod>
         ruin_method;       /**< The ruin method for destroying parts of the solution. */
     sorter::Sorter sorter; /**< The sorter for sorting customers during the perturbation process. */
+    std::unique_ptr<Listener> listener; /**< The listener for receiving optimization events. */
   };
 }  // namespace alkaidsd

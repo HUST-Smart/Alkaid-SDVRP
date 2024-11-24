@@ -1,6 +1,6 @@
 #pragma once
 
-#include <alkaidsd/problem.h>
+#include <alkaidsd/instance.h>
 #include <alkaidsd/solution.h>
 
 #include "delta.h"
@@ -43,11 +43,11 @@ namespace alkaidsd {
     return best_insertion;
   }
 
-  inline Node CalcFleetLowerBound(const Problem &problem) {
+  inline Node CalcFleetLowerBound(const Instance &instance) {
     int sum_demands = 0;
-    for (Node i = 1; i < problem.num_customers; ++i) {
-      sum_demands += problem.demands[i];
+    for (Node i = 1; i < instance.num_customers; ++i) {
+      sum_demands += instance.demands[i];
     }
-    return (sum_demands + problem.capacity - 1) / problem.capacity;
+    return (sum_demands + instance.capacity - 1) / instance.capacity;
   }
 }  // namespace alkaidsd

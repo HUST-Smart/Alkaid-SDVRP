@@ -41,7 +41,7 @@ namespace alkaidsd::inter_operator {
     }
   }
 
-  void CrossInner(const Problem &problem, const AlkaidSolution &solution, const RouteContext &context,
+  void CrossInner(const Instance &instance, const AlkaidSolution &solution, const RouteContext &context,
                   Node route_x, Node route_y, BaseCache<CrossMove> &cache, Random &random) {
     Node left_x = 0;
     do {
@@ -55,16 +55,16 @@ namespace alkaidsd::inter_operator {
         int predecessor_load_y = context.PreLoad(left_y);
         int successor_load_y = context.Load(route_y) - predecessor_load_y;
         int base
-            = -problem.distance_matrix[solution.Customer(left_x)][solution.Customer(successor_x)]
-              - problem.distance_matrix[solution.Customer(left_y)][solution.Customer(successor_y)];
+            = -instance.distance_matrix[solution.Customer(left_x)][solution.Customer(successor_x)]
+              - instance.distance_matrix[solution.Customer(left_y)][solution.Customer(successor_y)];
         for (bool reversed : {false, true}) {
-          if (predecessor_load_x + successor_load_y <= problem.capacity
-              && successor_load_x + predecessor_load_y <= problem.capacity) {
+          if (predecessor_load_x + successor_load_y <= instance.capacity
+              && successor_load_x + predecessor_load_y <= instance.capacity) {
             int delta
                 = base
-                  + problem
+                  + instance
                         .distance_matrix[solution.Customer(left_x)][solution.Customer(successor_y)]
-                  + problem.distance_matrix[solution.Customer(successor_x)]
+                  + instance.distance_matrix[solution.Customer(successor_x)]
                                            [solution.Customer(predecessor_y)];
             if (cache.delta.Update(delta, random)) {
               cache.move = {reversed, route_x, route_y, left_x, left_y};
@@ -79,7 +79,7 @@ namespace alkaidsd::inter_operator {
     } while (left_x);
   }
 
-  std::vector<Node> inter_operator::Cross::operator()(const Problem &problem, AlkaidSolution &solution,
+  std::vector<Node> inter_operator::Cross::operator()(const Instance &instance, AlkaidSolution &solution,
                                                       RouteContext &context, Random &random,
                                                       CacheMap &cache_map) const {
     auto &caches = cache_map.Get<InterRouteCache<CrossMove>>(solution, context);
@@ -89,7 +89,7 @@ namespace alkaidsd::inter_operator {
       for (Node route_y = route_x + 1; route_y < context.NumRoutes(); ++route_y) {
         auto &cache = caches.Get(route_x, route_y);
         if (!cache.TryReuse()) {
-          CrossInner(problem, solution, context, route_x, route_y, cache, random);
+          CrossInner(instance, solution, context, route_x, route_y, cache, random);
         } else {
           cache.move.route_x = route_x;
           cache.move.route_y = route_y;

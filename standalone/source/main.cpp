@@ -15,7 +15,7 @@ std::unique_ptr<alkaidsd::ruin_method::RuinMethod> ParseRuinMethod(
     const std::string &type, const std::vector<std::string> &args);
 alkaidsd::sorter::Sorter ParseSorter(const std::vector<std::string> &args);
 enum InputFormat { COORD_LIST, DENSE_MATRIX };
-alkaidsd::Problem ReadProblemFromFile(const std::string &problem_path,
+alkaidsd::Instance ReadInstanceFromFile(const std::string &instance_path,
                                       InputFormat format = COORD_LIST);
 std::map<std::string, double> ParseFromArgs(const std::vector<std::string> &args);
 
@@ -39,10 +39,10 @@ private:
 
 int main(int argc, char **argv) {
   CLI::App app;
-  std::string problem_path;
+  std::string instance_path;
   alkaidsd::AlkaidConfig config;
   InputFormat input_format;
-  app.add_option("--input", problem_path, "SDVRP problem instance file path")
+  app.add_option("--input", instance_path, "SDVRP problem instance file path")
       ->required()
       ->check(CLI::ExistingFile);
   std::string output;
@@ -77,10 +77,10 @@ int main(int argc, char **argv) {
   config.ruin_method = ParseRuinMethod(ruin_method_type, ruin_method_args);
   config.sorter = ParseSorter(sorters);
   config.listener = std::make_unique<SimpleListener>();
-  auto problem = ReadProblemFromFile(problem_path, input_format);
-  auto distance_matrix_optimizer = alkaidsd::DistanceMatrixOptimizer(problem.distance_matrix);
+  auto instance = ReadInstanceFromFile(instance_path, input_format);
+  auto distance_matrix_optimizer = alkaidsd::DistanceMatrixOptimizer(instance.distance_matrix);
   alkaidsd::AlkaidSolver solver;
-  auto solution = solver.Solve(config, problem);
+  auto solution = solver.Solve(config, instance);
   distance_matrix_optimizer.Restore(solution);
   std::ofstream ofs(output);
   std::string json_ext(".json");
@@ -214,40 +214,40 @@ std::map<std::string, double> ParseFromArgs(const std::vector<std::string> &args
   return ret;
 }
 
-alkaidsd::Problem ReadProblemFromFile(const std::string &problem_path, InputFormat format) {
-  std::ifstream ifs(problem_path);
+alkaidsd::Instance ReadInstanceFromFile(const std::string &instance_path, InputFormat format) {
+  std::ifstream ifs(instance_path);
   if (ifs.fail()) {
-    throw std::invalid_argument("Cannot open problem.");
+    throw std::invalid_argument("Cannot open instance.");
   }
-  alkaidsd::Problem problem{};
-  ifs >> problem.num_customers >> problem.capacity;
-  ++problem.num_customers;
-  problem.demands.resize(problem.num_customers);
-  for (alkaidsd::Node i = 1; i < problem.num_customers; ++i) {
-    ifs >> problem.demands[i];
+  alkaidsd::Instance instance{};
+  ifs >> instance.num_customers >> instance.capacity;
+  ++instance.num_customers;
+  instance.demands.resize(instance.num_customers);
+  for (alkaidsd::Node i = 1; i < instance.num_customers; ++i) {
+    ifs >> instance.demands[i];
   }
 
-  problem.distance_matrix.resize(problem.num_customers);
+  instance.distance_matrix.resize(instance.num_customers);
   if (format == InputFormat::DENSE_MATRIX) {
-    for (alkaidsd::Node i = 0; i < problem.num_customers; ++i) {
-      problem.distance_matrix[i].resize(problem.num_customers);
-      for (alkaidsd::Node j = 0; j < problem.num_customers; ++j) {
-        ifs >> problem.distance_matrix[i][j];
+    for (alkaidsd::Node i = 0; i < instance.num_customers; ++i) {
+      instance.distance_matrix[i].resize(instance.num_customers);
+      for (alkaidsd::Node j = 0; j < instance.num_customers; ++j) {
+        ifs >> instance.distance_matrix[i][j];
       }
     }
   } else {
-    std::vector<std::pair<int, int>> customers(problem.num_customers);
-    for (alkaidsd::Node i = 0; i < problem.num_customers; ++i) {
+    std::vector<std::pair<int, int>> customers(instance.num_customers);
+    for (alkaidsd::Node i = 0; i < instance.num_customers; ++i) {
       ifs >> customers[i].first >> customers[i].second;
     }
-    for (alkaidsd::Node i = 0; i < problem.num_customers; ++i) {
-      problem.distance_matrix[i].resize(problem.num_customers);
-      for (alkaidsd::Node j = 0; j < problem.num_customers; ++j) {
+    for (alkaidsd::Node i = 0; i < instance.num_customers; ++i) {
+      instance.distance_matrix[i].resize(instance.num_customers);
+      for (alkaidsd::Node j = 0; j < instance.num_customers; ++j) {
         auto [x1, y1] = customers[i];
         auto [x2, y2] = customers[j];
-        problem.distance_matrix[i][j] = lround(hypot(x1 - x2, y1 - y2));
+        instance.distance_matrix[i][j] = lround(hypot(x1 - x2, y1 - y2));
       }
     }
   }
-  return problem;
+  return instance;
 }
